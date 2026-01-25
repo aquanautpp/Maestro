@@ -1,0 +1,32 @@
+# Early Childhood Coach - Algorithm Configuration
+# Copy this file to config.yaml and adjust values
+
+vad:
+  # Energy threshold for voice detection (0.0 - 1.0)
+  threshold: 0.01
+  # Audio sample rate in Hz
+  sample_rate: 16000
+  # Frame duration in milliseconds
+  frame_ms: 30
+
+turn_detection:
+  # Minimum pause duration to consider end of utterance (ms)
+  min_pause_ms: 500
+  # Maximum gap between utterances to count as same conversation (ms)
+  max_turn_gap_ms: 5000
+  # Minimum utterances to count as a turn
+  min_utterances_per_turn: 3
+
+pitch_estimation:
+  # Enable pitch-based speaker discrimination
+  enabled: false
+  # Adult voice frequency range (Hz)
+  adult_min_hz: 85
+  adult_max_hz: 255
+  # Child voice frequency range (Hz)
+  child_min_hz: 250
+  child_max_hz: 400
+
+logging:
+  level: INFO
+  file: null  # Set to path for file logging

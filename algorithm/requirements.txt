@@ -1,0 +1,22 @@
+# Core audio processing
+numpy>=1.24.0
+scipy>=1.10.0
+
+# Audio I/O
+soundfile>=0.12.0
+pydub>=0.25.0  # For MP3 support
+
+# Voice Activity Detection
+webrtcvad>=2.0.10
+
+# Testing
+pytest>=7.0.0
+pytest-cov>=4.0.0
+
+# Development
+black>=23.0.0
+mypy>=1.0.0
+ruff>=0.1.0
+
+# Configuration
+pyyaml>=6.0.0
