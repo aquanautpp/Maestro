@@ -21,3 +21,9 @@ ruff>=0.1.0
 
 # Configuration
 pyyaml>=6.0.0
+
+# Web (real-time dashboard)
+flask-socketio>=5.3.0
+
+# LLM coaching
+openai>=1.0.0
