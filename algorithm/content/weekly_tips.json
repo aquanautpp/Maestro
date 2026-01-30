@@ -1,0 +1,66 @@
+{
+  "tips": [
+    {
+      "week": 1,
+      "title": "Nomeie o mundo",
+      "tip": "Quando seu filho apontar pra algo, diga o nome do objeto",
+      "example": "Ele aponta pro cachorro? Diga 'Cachorro! Olha o cachorro!'",
+      "why": "Nomear objetos ajuda a construir vocabulario e mostra que voce esta prestando atencao"
+    },
+    {
+      "week": 2,
+      "title": "Narre o momento",
+      "tip": "Tente narrar o que voces estao fazendo juntos",
+      "example": "Enquanto brincam: 'Voce esta colocando o bloco azul em cima!'",
+      "why": "Narrar ajuda a crianca a conectar palavras com acoes"
+    },
+    {
+      "week": 3,
+      "title": "Siga a lideranca",
+      "tip": "Deixe seu filho liderar a brincadeira por 5 minutos",
+      "example": "Se ele quer empilhar potes, empilhe junto sem redirecionar",
+      "why": "Seguir os interesses da crianca fortalece a conexao e autonomia"
+    },
+    {
+      "week": 4,
+      "title": "Espere a resposta",
+      "tip": "Faca uma pausa e espere ele responder antes de falar de novo",
+      "example": "Pergunte algo e conte ate 5 mentalmente antes de falar de novo",
+      "why": "Pausas dao tempo para a crianca processar e formular resposta"
+    },
+    {
+      "week": 5,
+      "title": "Descreva transicoes",
+      "tip": "Quando ele mudar de atividade, descreva a transicao",
+      "example": "'Voce terminou com os blocos. Agora quer os carrinhos!'",
+      "why": "Descrever mudancas ajuda a crianca a entender sequencias"
+    }
+  ],
+  "encouragements": [
+    "Voces estao construindo conexao!",
+    "Cada conversa importa.",
+    "Voce esta fazendo a diferenca.",
+    "Momentos pequenos, impacto grande.",
+    "A presenca de voces ja e um presente.",
+    "Continua assim!",
+    "O tempo junto vale ouro.",
+    "Voce esta no caminho certo."
+  ],
+  "positive_trends": {
+    "up": [
+      "Que semana incrivel! {percent}% mais momentos de conversa!",
+      "Uau! Voces conversaram {percent}% mais essa semana!",
+      "Progresso lindo: +{percent}% de momentos juntos!"
+    ],
+    "stable": [
+      "Consistencia e chave! Voces mantiveram o ritmo.",
+      "Que bom ver voces mantendo a conexao!",
+      "Ritmo constante - isso e o que importa."
+    ],
+    "down": [
+      "Semana corrida? Normal! O importante e continuar.",
+      "Cada momento conta, mesmo que sejam menos.",
+      "Qualidade importa mais que quantidade."
+    ]
+  }
+}

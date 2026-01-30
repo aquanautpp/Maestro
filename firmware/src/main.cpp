@@ -20,6 +20,7 @@
 #include <Arduino.h>
 #include "audio_capture.h"
 #include "vad_detector.h"
+#include "pitch_detector.h"
 #include "ble_service.h"
 #include "feedback.h"
 
@@ -56,9 +57,10 @@ static uint32_t last_speech_end_time = 0;
 static bool waiting_for_response = false;
 static uint32_t child_speech_time = 0;
 
-// For simple speaker classification (placeholder)
-// In reality, this would use pitch estimation
-static bool last_was_child = false;
+// Audio buffer for pitch analysis (max 2 seconds of speech)
+#define SPEECH_BUFFER_SIZE (AUDIO_SAMPLE_RATE * 2)
+static int16_t speech_buffer[SPEECH_BUFFER_SIZE];
+static size_t speech_buffer_pos = 0;
 
 // Timing
 static uint32_t last_status_update = 0;
@@ -107,6 +109,9 @@ void setup() {
     // 3. VAD
     vad_init();
     vad_set_adaptive(true);  // Enable adaptive threshold
+
+    // 4. Pitch detector
+    pitch_init();
 
     // 4. BLE
     if (!ble_init(DEVICE_NAME)) {
@@ -162,11 +167,20 @@ void loop() {
                 process_speech_segment(segment);
             }
 
-            // Track speaking state transitions
+            // Track speaking state and accumulate audio for pitch
             if (vad_result.is_speech && !last_was_speaking) {
-                // Speech started
+                // Speech started - reset buffer
                 Serial.println("Speech started");
-            } else if (!vad_result.is_speech && last_was_speaking) {
+                speech_buffer_pos = 0;
+            }
+
+            // Accumulate audio during speech for pitch analysis
+            if (vad_result.is_speech && speech_buffer_pos + AUDIO_FRAME_SAMPLES < SPEECH_BUFFER_SIZE) {
+                memcpy(speech_buffer + speech_buffer_pos, frame.samples, AUDIO_FRAME_SAMPLES * sizeof(int16_t));
+                speech_buffer_pos += AUDIO_FRAME_SAMPLES;
+            }
+
+            if (!vad_result.is_speech && last_was_speaking) {
                 // Speech ended
                 Serial.println("Speech ended");
                 last_speech_end_time = now;
@@ -226,7 +240,7 @@ void on_session_control(bool start) {
         last_was_speaking = false;
         last_speech_end_time = 0;
         waiting_for_response = false;
-        last_was_child = false;
+        speech_buffer_pos = 0;
 
         // Reset VAD
         vad_reset();
@@ -274,33 +288,27 @@ void on_ble_connection(bool connected) {
 // ============================================================================
 
 /**
- * Process a completed speech segment
+ * Process a completed speech segment using pitch detection
  */
 void process_speech_segment(const SpeechSegment& segment) {
     uint32_t now = millis();
 
-    // Simple speaker classification based on segment characteristics
-    // In a real implementation, this would use pitch estimation
-    // For now, we'll alternate or use energy heuristics
+    // Use accumulated audio buffer for pitch analysis
+    PitchResult pitch = pitch_estimate_robust(speech_buffer, speech_buffer_pos, AUDIO_SAMPLE_RATE);
 
-    // Heuristic: Higher energy = likely adult
-    // This is a placeholder - real implementation needs pitch analysis
-    bool is_child = (segment.avg_energy < 0.1f);
-
-    Serial.printf("Speech segment: %lu ms, energy: %.3f, speaker: %s\n",
+    Serial.printf("Speech segment: %lu ms, energy: %.3f, pitch: %.0f Hz, speaker: %s\n",
                   segment.duration_ms, segment.avg_energy,
-                  is_child ? "child" : "adult");
+                  pitch.pitch_hz, speaker_type_str(pitch.speaker));
 
-    if (is_child) {
+    if (pitch.speaker == SPEAKER_CHILD) {
         // Child spoke - this is a "serve"
         send_event(BLE_EVENT_SERVE);
         waiting_for_response = true;
         child_speech_time = segment.end_ms;
-        last_was_child = true;
 
         Serial.println("Event: SERVE (child spoke)");
 
-    } else if (waiting_for_response) {
+    } else if (pitch.speaker == SPEAKER_ADULT && waiting_for_response) {
         // Adult spoke after child - check if it's a "return"
         uint32_t response_time = segment.start_ms - child_speech_time;
 
@@ -313,8 +321,10 @@ void process_speech_segment(const SpeechSegment& segment) {
         }
 
         waiting_for_response = false;
-        last_was_child = false;
     }
+
+    // Reset buffer for next segment
+    speech_buffer_pos = 0;
 }
 
 /**
@@ -335,7 +345,6 @@ void check_missed_opportunity() {
         Serial.printf("Event: MISSED OPPORTUNITY (silence: %lu ms)\n", silence);
 
         waiting_for_response = false;
-        last_was_child = false;
     }
 }
 

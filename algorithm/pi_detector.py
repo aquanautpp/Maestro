@@ -141,7 +141,7 @@ def vibrate_cleanup():
 # VAD Simples (energia)
 # =============================================================================
 
-def is_speech(frame, threshold=0.02):
+def is_speech(frame, threshold=0.003):
     """Detecta fala por energia RMS."""
     rms = np.sqrt(np.mean(frame ** 2))
     return rms > threshold
@@ -238,6 +238,8 @@ def add_event(event_type, speaker=None, pitch=None, latency=None):
         if latency is not None:
             event["response_time"] = round(latency, 2)
         state.events.append(event)
+        print(f"[EVENT] Added: {event}, total events: {len(state.events)}")
+        sys.stdout.flush()
         return event
 
 
@@ -309,12 +311,22 @@ def clear_speaker_after_silence():
 # Callback de Áudio
 # =============================================================================
 
+import sys
+debug_counter = [0]
+
 def audio_callback(indata, frames, time_info, status):
     """Processa áudio em tempo real."""
     if not state.listening:
         return
 
     audio = indata[:, 0].astype(np.float32)
+
+    # Debug: show RMS every 50 frames
+    debug_counter[0] += 1
+    rms = np.sqrt(np.mean(audio ** 2))
+    if debug_counter[0] % 50 == 0:
+        print(f"[DEBUG] Frame {debug_counter[0]}, RMS: {rms:.4f}, in_speech: {state.in_speech}")
+        sys.stdout.flush()
 
     for i in range(0, len(audio) - FRAME_SIZE + 1, FRAME_SIZE):
         frame = audio[i:i + FRAME_SIZE]
@@ -625,7 +637,9 @@ def main():
     print()
 
     try:
+        # device=1 para usar Intel Microphone Array no Windows
         with sd.InputStream(
+            device=1,
             samplerate=SAMPLE_RATE,
             channels=1,
             callback=audio_callback,
