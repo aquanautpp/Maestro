@@ -5,7 +5,13 @@
       "timestamp": "2026-02-06T10:08:51.389692",
       "model": "gpt-4o-mini",
       "provider": "openai"
+    },
+    "ed09425b4f32e0bd": {
+      "text": "Que ótimo que você já estabeleceu uma rotina e é consistente com ela! Você pode dedicar um momento diário para fazer atividades de faz-de-conta junto com a criança, como brincar de \"médico\" ou \"super-herói\". Essas brincadeiras ajudam a desenvolver a imaginação e habilidades sociais, além de serem muito divertidas! Sempre que possível, elogie a criatividade dela durante essas interações.",
+      "timestamp": "2026-02-06T11:12:42.982655",
+      "model": "gpt-4o-mini",
+      "provider": "openai"
     }
   },
-  "last_updated": "2026-02-06T10:08:51.390265"
+  "last_updated": "2026-02-06T11:12:42.983159"
 }

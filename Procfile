@@ -1,1 +1,1 @@
-web: cd algorithm && pip install -r requirements.txt && gunicorn realtime_detector:app --bind 0.0.0.0:$PORT
+web: gunicorn app:app
