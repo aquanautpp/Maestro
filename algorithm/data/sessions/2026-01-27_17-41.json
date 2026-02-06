@@ -1,0 +1,37 @@
+{
+  "session_id": "489e12d4",
+  "started_at": "2026-01-27T17:41:58.120346Z",
+  "ended_at": "2026-01-27T18:43:28.572204Z",
+  "duration_seconds": 3690.5,
+  "duration_minutes": 61.5,
+  "verbal_turns": 0,
+  "child_serves": 0,
+  "turns_per_hour": 0.0,
+  "avg_response_time": 0,
+  "response_times": [],
+  "events": [
+    {
+      "time": 552.7,
+      "type": "uncertain"
+    },
+    {
+      "time": 572.3,
+      "type": "speech",
+      "speaker": "ADT",
+      "pitch": 242
+    },
+    {
+      "time": 573.7,
+      "type": "uncertain"
+    },
+    {
+      "time": 582.2,
+      "type": "uncertain"
+    },
+    {
+      "time": 584.8,
+      "type": "uncertain"
+    }
+  ],
+  "synced": false
+}

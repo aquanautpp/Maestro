@@ -1,0 +1,82 @@
+{
+  "session_id": "7803874e",
+  "started_at": "2026-01-30T17:29:13.188359Z",
+  "ended_at": "2026-01-30T17:30:02.166879Z",
+  "duration_seconds": 49.0,
+  "duration_minutes": 0.8,
+  "moments": 1,
+  "child_speech": 1,
+  "adult_speech": 12,
+  "moments_per_hour": 73.5,
+  "response_times": [
+    3.69
+  ],
+  "events": [
+    {
+      "time": 4.0,
+      "type": "adult",
+      "pitch": 124
+    },
+    {
+      "time": 7.0,
+      "type": "adult",
+      "pitch": 117
+    },
+    {
+      "time": 12.8,
+      "type": "adult",
+      "pitch": 262
+    },
+    {
+      "time": 19.2,
+      "type": "adult",
+      "pitch": 124
+    },
+    {
+      "time": 23.7,
+      "type": "adult",
+      "pitch": 146
+    },
+    {
+      "time": 25.7,
+      "type": "child",
+      "pitch": 344
+    },
+    {
+      "time": 29.4,
+      "type": "moment",
+      "response_time": 3.69
+    },
+    {
+      "time": 32.4,
+      "type": "adult",
+      "pitch": 185
+    },
+    {
+      "time": 33.6,
+      "type": "adult",
+      "pitch": 173
+    },
+    {
+      "time": 37.1,
+      "type": "adult",
+      "pitch": 162
+    },
+    {
+      "time": 45.8,
+      "type": "adult",
+      "pitch": 132
+    },
+    {
+      "time": 46.8,
+      "type": "adult",
+      "pitch": 215
+    },
+    {
+      "time": 48.8,
+      "type": "adult",
+      "pitch": 184
+    }
+  ],
+  "synced": false
+}

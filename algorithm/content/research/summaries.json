@@ -1,0 +1,85 @@
+{
+  "papers": [
+    {
+      "id": "shonkoff_2012",
+      "title": "The Lifelong Effects of Early Childhood Adversity and Toxic Stress",
+      "authors": "Jack P. Shonkoff et al.",
+      "year": 2012,
+      "source": "Pediatrics",
+      "plain_summary": "Este estudo mostra que estresse intenso e prolongado na primeira infancia pode afetar o desenvolvimento cerebral. A boa noticia: relacoes responsivas com adultos (como conversas serve-and-return) protegem o cerebro da crianca.",
+      "key_findings": [
+        "Estresse toxico (sem apoio de adultos) pode prejudicar conexoes cerebrais",
+        "Relacoes responsivas funcionam como 'escudo' protetor",
+        "Quanto mais cedo a intervencao, melhor o resultado"
+      ],
+      "relevance_to_maestro": "Cada momento de conversa que voce tem com seu filho constroi conexoes cerebrais e cria um ambiente protetor contra estresse.",
+      "tags": ["featured", "brain_development", "stress", "serve_and_return"],
+      "reading_time_min": 4
+    },
+    {
+      "id": "hart_risley_1995",
+      "title": "The 30 Million Word Gap",
+      "authors": "Betty Hart & Todd Risley",
+      "year": 1995,
+      "source": "University of Kansas",
+      "plain_summary": "Pesquisadores descobriram que criancas de familias com mais conversas ouvem 30 milhoes de palavras a mais ate os 3 anos. Isso nao e sobre dinheiro - e sobre conversar com a crianca.",
+      "key_findings": [
+        "A quantidade de conversa importa muito nos primeiros 3 anos",
+        "Nao e sobre palavras dificeis - e sobre interacao",
+        "Conversas de ida-e-volta sao mais importantes que TV ou audio"
+      ],
+      "relevance_to_maestro": "O Maestro ajuda voce a ter mais dessas conversas preciosas, sem julgamento sobre quanto voce ja faz.",
+      "tags": ["featured", "vocabulary", "word_gap", "conversation"],
+      "reading_time_min": 3
+    },
+    {
+      "id": "serve_return_2023",
+      "title": "Serve and Return: Building Brain Architecture",
+      "authors": "Center on the Developing Child, Harvard University",
+      "year": 2023,
+      "source": "Harvard CDC",
+      "plain_summary": "Interacoes de serve-and-return sao como um jogo de tenis: a crianca 'serve' (olha, aponta, balbucia) e o adulto 'retorna' (responde, nomeia, sorri). Esse vai-e-vem constroi o cerebro.",
+      "key_findings": [
+        "Mais de 1 milhao de conexoes cerebrais se formam por segundo nos primeiros anos",
+        "Serve-and-return fortalece essas conexoes",
+        "Nao precisa ser perfeito - responder consistentemente ja ajuda muito"
+      ],
+      "relevance_to_maestro": "O Maestro detecta exatamente esses momentos de serve-and-return e celebra cada um deles com voce.",
+      "tags": ["featured", "serve_and_return", "brain_development", "harvard"],
+      "reading_time_min": 3
+    },
+    {
+      "id": "romeo_2018",
+      "title": "Beyond the 30-Million-Word Gap: Children's Conversational Exposure Is Associated With Language-Related Brain Function",
+      "authors": "Rachel Romeo et al.",
+      "year": 2018,
+      "source": "Psychological Science",
+      "plain_summary": "Usando ressonancia magnetica, cientistas descobriram que conversas de ida-e-volta (nao apenas ouvir palavras) ativam areas cerebrais ligadas a linguagem. Turnos de conversa importam mais que quantidade de palavras.",
+      "key_findings": [
+        "Turnos de conversa sao mais importantes que quantidade de palavras",
+        "Conversas ativam areas especificas do cerebro ligadas a linguagem",
+        "Criancas com mais turnos de conversa tem melhor processamento de linguagem"
+      ],
+      "relevance_to_maestro": "Por isso o Maestro conta 'momentos de conversa' e nao palavras - turnos de ida-e-volta sao o que realmente importa.",
+      "tags": ["brain_development", "conversation", "neuroscience"],
+      "reading_time_min": 4
+    },
+    {
+      "id": "three_principles",
+      "title": "Three Principles to Improve Outcomes for Children and Families",
+      "authors": "Center on the Developing Child, Harvard University",
+      "year": 2021,
+      "source": "Harvard CDC",
+      "plain_summary": "Tres principios cientificos para ajudar criancas: (1) apoiar relacoes responsivas, (2) fortalecer habilidades de autocontrole, e (3) reduzir estresse. Tudo comeca com conexao.",
+      "key_findings": [
+        "Relacoes responsivas sao a influencia mais importante no desenvolvimento",
+        "Funcao executiva e auto-regulacao podem ser desenvolvidas",
+        "Estresse toxico prejudica, mas pode ser prevenido com apoio"
+      ],
+      "relevance_to_maestro": "O Maestro foca no principio #1: fortalecer relacoes responsivas atraves de conversas.",
+      "tags": ["three_principles", "harvard", "policy"],
+      "reading_time_min": 3
+    }
+  ],
+  "last_updated": "2026-02-06T00:00:00Z"
+}

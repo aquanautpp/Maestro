@@ -1,0 +1,137 @@
+{
+  "session_id": "54e5e484",
+  "started_at": "2026-01-30T17:17:26.302899Z",
+  "ended_at": "2026-01-30T17:19:10.950712Z",
+  "duration_seconds": 104.6,
+  "duration_minutes": 1.7,
+  "moments": 3,
+  "child_speech": 4,
+  "adult_speech": 9,
+  "moments_per_hour": 103.2,
+  "response_times": [
+    5.18,
+    4.29,
+    3.76
+  ],
+  "events": [
+    {
+      "time": 3.5,
+      "type": "adult",
+      "pitch": 130
+    },
+    {
+      "time": 5.1,
+      "type": "child",
+      "pitch": 352
+    },
+    {
+      "time": 10.3,
+      "type": "moment",
+      "response_time": 5.18
+    },
+    {
+      "time": 13.0,
+      "type": "adult",
+      "pitch": 116
+    },
+    {
+      "time": 16.8,
+      "type": "adult",
+      "pitch": 137
+    },
+    {
+      "time": 20.7,
+      "type": "adult",
+      "pitch": 276
+    },
+    {
+      "time": 22.8,
+      "type": "child",
+      "pitch": 315
+    },
+    {
+      "time": 27.1,
+      "type": "moment",
+      "response_time": 4.29
+    },
+    {
+      "time": 30.4,
+      "type": "adult",
+      "pitch": 121
+    },
+    {
+      "time": 33.5,
+      "type": "adult",
+      "pitch": 126
+    },
+    {
+      "time": 39.4,
+      "type": "child",
+      "pitch": 350
+    },
+    {
+      "time": 42.1,
+      "type": "sound",
+      "pitch": 285,
+      "note": "uncertain"
+    },
+    {
+      "time": 43.1,
+      "type": "moment",
+      "response_time": 3.76
+    },
+    {
+      "time": 45.7,
+      "type": "sound",
+      "pitch": 290,
+      "note": "uncertain"
+    },
+    {
+      "time": 49.5,
+      "type": "sound",
+      "pitch": 280,
+      "note": "uncertain"
+    },
+    {
+      "time": 52.3,
+      "type": "sound",
+      "note": "uncertain"
+    },
+    {
+      "time": 64.3,
+      "type": "sound",
+      "note": "uncertain"
+    },
+    {
+      "time": 65.2,
+      "type": "sound",
+      "note": "uncertain"
+    },
+    {
+      "time": 71.3,
+      "type": "sound",
+      "note": "uncertain"
+    },
+    {
+      "time": 73.5,
+      "type": "child",
+      "pitch": 346
+    },
+    {
+      "time": 74.4,
+      "type": "sound",
+      "note": "uncertain"
+    },
+    {
+      "time": 88.6,
+      "type": "window_closed",
+      "note": "ready_for_next"
+    },
+    {
+      "time": 103.1,
+      "type": "sound",
+      "note": "uncertain"
+    }
+  ],
+  "synced": false
+}

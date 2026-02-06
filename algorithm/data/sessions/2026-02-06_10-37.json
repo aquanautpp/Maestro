@@ -1,0 +1,14 @@
+{
+  "session_id": "266dfdf8",
+  "started_at": "2026-02-06T10:37:44.230586Z",
+  "ended_at": "2026-02-06T10:37:45.285207Z",
+  "duration_seconds": 1.1,
+  "duration_minutes": 0.0,
+  "moments": 0,
+  "child_speech": 0,
+  "adult_speech": 0,
+  "moments_per_hour": 0,
+  "response_times": [],
+  "events": [],
+  "synced": false
+}
