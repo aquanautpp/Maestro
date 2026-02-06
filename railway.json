@@ -1,12 +1,7 @@
 {
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
-    "builder": "NIXPACKS",
-    "watchPatterns": ["algorithm/**"]
-  },
-  "deploy": {
-    "startCommand": "cd algorithm && gunicorn realtime_detector:app --bind 0.0.0.0:$PORT",
-    "restartPolicyType": "ON_FAILURE",
-    "restartPolicyMaxRetries": 10
+    "builder": "DOCKERFILE",
+    "dockerfilePath": "Dockerfile"
   }
 }
