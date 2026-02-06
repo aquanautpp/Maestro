@@ -1,0 +1,8 @@
+[phases.setup]
+nixPkgs = ["python311"]
+
+[phases.install]
+cmds = ["cd algorithm && pip install -r requirements.txt"]
+
+[start]
+cmd = "cd algorithm && gunicorn realtime_detector:app --bind 0.0.0.0:$PORT"
