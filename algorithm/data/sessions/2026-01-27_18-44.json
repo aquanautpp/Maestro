@@ -1,0 +1,20 @@
+{
+  "session_id": "e75e4c41",
+  "started_at": "2026-01-27T18:44:14.899731Z",
+  "ended_at": "2026-01-27T19:18:38.224802Z",
+  "duration_seconds": 2063.3,
+  "duration_minutes": 34.4,
+  "moments": 0,
+  "child_speech": 0,
+  "adult_speech": 0,
+  "moments_per_hour": 0.0,
+  "response_times": [],
+  "events": [
+    {
+      "time": 43.8,
+      "type": "sound",
+      "note": "uncertain"
+    }
+  ],
+  "synced": false
+}

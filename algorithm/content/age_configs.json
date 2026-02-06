@@ -1,0 +1,64 @@
+{
+  "_comment": "Age-specific configurations for Maestro detection and content",
+  "_source": "Based on developmental research on children's vocal characteristics",
+
+  "0-1": {
+    "pitch_threshold_hz": 320,
+    "response_window_s": 20.0,
+    "min_speech_duration_ms": 300,
+    "milestone_keys": ["0-6_months", "6-12_months"],
+    "activity_focus": ["socioemocional", "motor"],
+    "serve_return_emphasis": [1, 2],
+    "description": "Bebes (0-12 meses): Foco em conexao emocional e respostas a balbucios"
+  },
+
+  "1-2": {
+    "pitch_threshold_hz": 300,
+    "response_window_s": 18.0,
+    "min_speech_duration_ms": 400,
+    "milestone_keys": ["12-24_months"],
+    "activity_focus": ["linguagem", "cognitivo"],
+    "serve_return_emphasis": [1, 2, 3],
+    "description": "Toddlers (12-24 meses): Explosao de vocabulario, foco em nomear"
+  },
+
+  "2-3": {
+    "pitch_threshold_hz": 285,
+    "response_window_s": 15.0,
+    "min_speech_duration_ms": 500,
+    "milestone_keys": ["24-36_months"],
+    "activity_focus": ["linguagem", "cognitivo", "socioemocional"],
+    "serve_return_emphasis": [3, 4],
+    "description": "Pre-escolar inicial (24-36 meses): Frases curtas, foco em esperar a vez"
+  },
+
+  "3-4": {
+    "pitch_threshold_hz": 270,
+    "response_window_s": 12.0,
+    "min_speech_duration_ms": 500,
+    "milestone_keys": ["3-4_years"],
+    "activity_focus": ["linguagem", "cognitivo", "socioemocional"],
+    "serve_return_emphasis": [3, 4, 5],
+    "description": "Pre-escolar (3-4 anos): Historias e imaginacao, foco em transicoes"
+  },
+
+  "4-5": {
+    "pitch_threshold_hz": 260,
+    "response_window_s": 10.0,
+    "min_speech_duration_ms": 500,
+    "milestone_keys": ["4-6_years"],
+    "activity_focus": ["linguagem", "cognitivo"],
+    "serve_return_emphasis": [4, 5],
+    "description": "Pre-escolar tardio (4-5 anos): Pensamento logico, conversas mais longas"
+  },
+
+  "5-6": {
+    "pitch_threshold_hz": 250,
+    "response_window_s": 10.0,
+    "min_speech_duration_ms": 500,
+    "milestone_keys": ["4-6_years"],
+    "activity_focus": ["linguagem", "cognitivo"],
+    "serve_return_emphasis": [4, 5],
+    "description": "Transicao escolar (5-6 anos): Preparacao para alfabetizacao"
+  }
+}

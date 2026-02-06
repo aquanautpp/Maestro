@@ -8,6 +8,39 @@ from typing import Optional, Literal
 Speaker = Literal["adult", "child", "unknown"]
 
 
+# Default pitch thresholds by age (in months)
+# Younger children have higher pitched voices
+AGE_PITCH_THRESHOLDS = {
+    0: 320,    # 0-12 months: infants have very high pitch
+    12: 300,   # 12-24 months
+    24: 285,   # 24-36 months
+    36: 270,   # 36-48 months
+    48: 260,   # 48-60 months
+    60: 250,   # 60-72 months (approaching typical child threshold)
+}
+
+
+def get_pitch_threshold_for_age(age_months: Optional[int] = None) -> float:
+    """
+    Get appropriate pitch threshold based on child's age.
+
+    Args:
+        age_months: Child's age in months. If None, uses default (250 Hz).
+
+    Returns:
+        Pitch threshold in Hz
+    """
+    if age_months is None:
+        return 250.0
+
+    # Find the appropriate threshold for the age
+    threshold = 250.0
+    for min_age, pitch in sorted(AGE_PITCH_THRESHOLDS.items()):
+        if age_months >= min_age:
+            threshold = pitch
+    return float(threshold)
+
+
 class PitchEstimator:
     """
     Estimate fundamental frequency (F0) to classify speakers.
@@ -17,7 +50,10 @@ class PitchEstimator:
     Typical F0 ranges:
     - Adult male: 85-180 Hz
     - Adult female: 165-255 Hz
-    - Child (2-5 years): 250-400 Hz
+    - Child (varies by age):
+      - Infant (0-1): 300-500 Hz
+      - Toddler (1-3): 275-400 Hz
+      - Preschool (3-6): 250-350 Hz
     """
 
     def __init__(
@@ -25,7 +61,8 @@ class PitchEstimator:
         sample_rate: int = 16000,
         min_f0: float = 75.0,
         max_f0: float = 500.0,
-        child_threshold: float = 250.0,
+        child_threshold: Optional[float] = None,
+        age_months: Optional[int] = None,
     ):
         """
         Initialize pitch estimator.
@@ -34,12 +71,21 @@ class PitchEstimator:
             sample_rate: Audio sample rate
             min_f0: Minimum F0 to detect (Hz)
             max_f0: Maximum F0 to detect (Hz)
-            child_threshold: F0 above this is classified as child (Hz)
+            child_threshold: F0 above this is classified as child (Hz).
+                           If None, determined by age_months.
+            age_months: Child's age in months. Used to set child_threshold
+                       if child_threshold is not explicitly provided.
         """
         self.sample_rate = sample_rate
         self.min_f0 = min_f0
         self.max_f0 = max_f0
-        self.child_threshold = child_threshold
+        self.age_months = age_months
+
+        # Determine child threshold based on age if not explicitly set
+        if child_threshold is not None:
+            self.child_threshold = child_threshold
+        else:
+            self.child_threshold = get_pitch_threshold_for_age(age_months)
 
         # Convert to lag in samples
         self.min_lag = int(sample_rate / max_f0)
@@ -125,7 +171,8 @@ class PitchEstimator:
 def classify_segment_speaker(
     samples: np.ndarray,
     sample_rate: int = 16000,
-    child_threshold: float = 250.0,
+    child_threshold: Optional[float] = None,
+    age_months: Optional[int] = None,
 ) -> tuple[Speaker, Optional[float]]:
     """
     Convenience function to classify a speech segment.
@@ -133,7 +180,10 @@ def classify_segment_speaker(
     Args:
         samples: Audio samples
         sample_rate: Sample rate
-        child_threshold: F0 threshold for child classification
+        child_threshold: F0 threshold for child classification.
+                        If None, determined by age_months.
+        age_months: Child's age in months. Used to set threshold
+                   if child_threshold is not provided.
 
     Returns:
         Tuple of (speaker_type, estimated_f0)
@@ -141,5 +191,6 @@ def classify_segment_speaker(
     estimator = PitchEstimator(
         sample_rate=sample_rate,
         child_threshold=child_threshold,
+        age_months=age_months,
     )
     return estimator.classify_speaker(samples)

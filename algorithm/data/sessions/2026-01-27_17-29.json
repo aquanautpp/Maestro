@@ -1,0 +1,15 @@
+{
+  "session_id": "26757fb6",
+  "started_at": "2026-01-27T17:29:40.909016Z",
+  "ended_at": "2026-01-27T17:32:40.933764Z",
+  "duration_seconds": 180.0,
+  "turns": 0,
+  "missed": 0,
+  "streak": 0,
+  "best_streak": 0,
+  "response_rate": 0,
+  "avg_response_time": 0,
+  "response_times": [],
+  "events": [],
+  "synced": false
+}

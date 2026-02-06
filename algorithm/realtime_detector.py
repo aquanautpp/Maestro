@@ -46,6 +46,69 @@ try:
 except ImportError:
     HAS_GPIO = False
 
+# Age adaptation module
+try:
+    from src.age_adaptation import (
+        get_age_group,
+        get_age_config,
+        get_pitch_threshold_for_age,
+        calculate_age_months,
+        ContentFilter,
+    )
+    HAS_AGE_ADAPTATION = True
+except ImportError:
+    HAS_AGE_ADAPTATION = False
+
+# Family management module
+try:
+    from src.family import Household, Child, Caregiver, ChildDetector
+    HAS_FAMILY_MODULE = True
+except ImportError:
+    HAS_FAMILY_MODULE = False
+
+# Knowledge base / RAG module
+try:
+    from src.knowledge import VectorStore, DocumentLoader, RAGEngine
+    from src.knowledge.summarizer import ResearchSummarizer
+    HAS_KNOWLEDGE_MODULE = True
+except ImportError:
+    HAS_KNOWLEDGE_MODULE = False
+
+# Analytics module
+try:
+    from src.analytics import PatternAnalyzer, TrendCalculator, QualityScorer
+    HAS_ANALYTICS_MODULE = True
+except ImportError:
+    HAS_ANALYTICS_MODULE = False
+
+# Context-aware tips module
+try:
+    from src.context import TimeContext, TipSelector
+    HAS_CONTEXT_MODULE = True
+except ImportError:
+    HAS_CONTEXT_MODULE = False
+
+# Coaching module
+try:
+    from src.coaching import PersonalizedCoach
+    HAS_COACHING_MODULE = True
+except ImportError:
+    HAS_COACHING_MODULE = False
+
+# Milestones module
+try:
+    from src.milestones import MilestoneTracker
+    HAS_MILESTONES_MODULE = True
+except ImportError:
+    HAS_MILESTONES_MODULE = False
+
+# Curriculum module
+try:
+    from src.curriculum import CurriculumManager, ProgressTracker
+    HAS_CURRICULUM_MODULE = True
+except ImportError:
+    HAS_CURRICULUM_MODULE = False
+
 # ============ CONFIGURACOES ============
 
 # Audio
@@ -53,13 +116,13 @@ SAMPLE_RATE = 16000
 FRAME_MS = 30
 FRAME_SIZE = SAMPLE_RATE * FRAME_MS // 1000  # 480 samples
 
-# Deteccao CONSERVADORA (alta confianca, sem falsos positivos)
-MIN_SPEECH_DURATION_MS = 500    # Minimo 0.5s para contar como fala
+# Deteccao SENSIVEL (melhor para criancas pequenas)
+MIN_SPEECH_DURATION_MS = 250    # Minimo 0.25s para contar como fala (era 500)
 MIN_SPEECH_FRAMES = int(MIN_SPEECH_DURATION_MS / FRAME_MS)
-IGNORE_DURATION_MS = 300        # Ignora sons < 0.3s
+IGNORE_DURATION_MS = 150        # Ignora sons < 0.15s (era 300)
 IGNORE_FRAMES = int(IGNORE_DURATION_MS / FRAME_MS)
 CONVERSATION_WINDOW_S = 15.0    # Janela GENEROSA de 15 segundos
-PITCH_CONFIDENCE_MIN = 0.85     # 85% confianca para classificar
+PITCH_CONFIDENCE_MIN = 0.60     # 60% confianca para classificar (era 85%)
 
 # Cores ANSI (para console)
 GREEN = "\033[92m"
@@ -110,6 +173,82 @@ def gpio_cleanup():
 SCRIPT_DIR = Path(__file__).parent
 DATA_DIR = SCRIPT_DIR / "data" / "sessions"
 CONTENT_DIR = SCRIPT_DIR / "content"
+PROFILE_FILE = SCRIPT_DIR / "data" / "family_profile.json"
+
+
+# ============ FAMILY PROFILE MANAGEMENT ============
+
+def load_family_profile():
+    """Load family profile from local JSON file."""
+    if not PROFILE_FILE.exists():
+        return {
+            "child_birth_date": None,
+            "child_name": None,
+            "child_age_months": None,
+            "age_group": None,
+        }
+
+    try:
+        with open(PROFILE_FILE, "r", encoding="utf-8") as f:
+            profile = json.load(f)
+
+        # Calculate current age if birth date exists
+        if profile.get("child_birth_date"):
+            if HAS_AGE_ADAPTATION:
+                age_months = calculate_age_months(profile["child_birth_date"])
+                profile["child_age_months"] = age_months
+                profile["age_group"] = get_age_group(age_months)
+            else:
+                # Fallback calculation without module
+                from datetime import date
+                birth = datetime.fromisoformat(profile["child_birth_date"].replace("Z", "")).date()
+                today = date.today()
+                months = (today.year - birth.year) * 12 + (today.month - birth.month)
+                profile["child_age_months"] = max(0, months)
+                profile["age_group"] = None
+
+        return profile
+    except Exception:
+        return {
+            "child_birth_date": None,
+            "child_name": None,
+            "child_age_months": None,
+            "age_group": None,
+        }
+
+
+def save_family_profile(profile):
+    """Save family profile to local JSON file."""
+    PROFILE_FILE.parent.mkdir(parents=True, exist_ok=True)
+
+    # Only save persistent fields
+    data = {
+        "child_birth_date": profile.get("child_birth_date"),
+        "child_name": profile.get("child_name"),
+        "updated_at": datetime.now().isoformat() + "Z",
+    }
+
+    with open(PROFILE_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+
+    return data
+
+
+def get_child_pitch_threshold():
+    """Get pitch threshold based on child's age from profile."""
+    profile = load_family_profile()
+    age_months = profile.get("child_age_months")
+
+    if age_months is not None and HAS_AGE_ADAPTATION:
+        return get_pitch_threshold_for_age(age_months)
+
+    # Default threshold if no profile or module not available
+    return 280.0
+
+
+# Global family profile (loaded at startup, updated via API)
+family_profile = {}
+
 
 # Supabase (opcional)
 
@@ -630,6 +769,832 @@ def api_reset():
     return jsonify({"status": "reset", "message": "Pronto para novos momentos!"})
 
 
+# ============ FAMILY PROFILE API ============
+
+@app.route('/api/family/profile', methods=['GET'])
+def api_get_family_profile():
+    """Get current family profile including child's age."""
+    global family_profile
+    family_profile = load_family_profile()
+
+    response = {
+        "child_name": family_profile.get("child_name"),
+        "child_birth_date": family_profile.get("child_birth_date"),
+        "child_age_months": family_profile.get("child_age_months"),
+        "age_group": family_profile.get("age_group"),
+    }
+
+    # Add age config if available
+    if HAS_AGE_ADAPTATION and family_profile.get("child_age_months") is not None:
+        config = get_age_config(family_profile["age_group"])
+        response["config"] = {
+            "pitch_threshold_hz": config.pitch_threshold_hz,
+            "response_window_s": config.response_window_s,
+            "activity_focus": config.activity_focus,
+            "serve_return_emphasis": config.serve_return_emphasis,
+        }
+
+    return jsonify(response)
+
+
+@app.route('/api/family/profile', methods=['POST'])
+def api_set_family_profile():
+    """Set or update family profile."""
+    global family_profile
+    data = request.get_json() or {}
+
+    # Validate birth date if provided
+    if "child_birth_date" in data:
+        try:
+            # Parse to validate format
+            birth_date = data["child_birth_date"]
+            if birth_date:
+                datetime.fromisoformat(birth_date.replace("Z", ""))
+        except ValueError:
+            return jsonify({"error": "Invalid birth date format. Use ISO format: YYYY-MM-DD"}), 400
+
+    # Update profile
+    current = load_family_profile()
+
+    if "child_name" in data:
+        current["child_name"] = data["child_name"]
+    if "child_birth_date" in data:
+        current["child_birth_date"] = data["child_birth_date"]
+
+    # Save and reload
+    save_family_profile(current)
+    family_profile = load_family_profile()
+
+    # Return updated profile with calculated fields
+    response = {
+        "status": "updated",
+        "child_name": family_profile.get("child_name"),
+        "child_birth_date": family_profile.get("child_birth_date"),
+        "child_age_months": family_profile.get("child_age_months"),
+        "age_group": family_profile.get("age_group"),
+    }
+
+    # Add age config if available
+    if HAS_AGE_ADAPTATION and family_profile.get("age_group"):
+        config = get_age_config(family_profile["age_group"])
+        response["config"] = {
+            "pitch_threshold_hz": config.pitch_threshold_hz,
+            "response_window_s": config.response_window_s,
+            "activity_focus": config.activity_focus,
+            "serve_return_emphasis": config.serve_return_emphasis,
+        }
+        response["message"] = f"Perfil atualizado! Configuracoes ajustadas para crianca de {family_profile['child_age_months']} meses."
+    else:
+        response["message"] = "Perfil atualizado!"
+
+    return jsonify(response)
+
+
+@app.route('/api/content/age-filtered', methods=['GET'])
+def api_age_filtered_content():
+    """Get educational content filtered by child's age."""
+    if not HAS_AGE_ADAPTATION:
+        return jsonify({"error": "Age adaptation module not available"}), 500
+
+    # Get age from query param or profile
+    age_months = request.args.get('age_months', type=int)
+
+    if age_months is None:
+        profile = load_family_profile()
+        age_months = profile.get("child_age_months")
+
+    if age_months is None:
+        return jsonify({
+            "error": "No age specified. Set child birth date via POST /api/family/profile or pass ?age_months=X"
+        }), 400
+
+    # Filter content
+    content_filter = ContentFilter()
+    summary = content_filter.get_content_summary_for_age(age_months)
+
+    return jsonify(summary)
+
+
+# ============ MULTI-CHILD FAMILY API ============
+
+@app.route('/api/family/children', methods=['GET'])
+def api_list_children():
+    """List all children in the household."""
+    if not HAS_FAMILY_MODULE:
+        return jsonify({"error": "Family module not available"}), 500
+
+    household = Household()
+    return jsonify({
+        "children": [c.to_dict() for c in household.active_children],
+        "total": len(household.active_children),
+        "active_child_id": household.active_child.id if household.active_child else None,
+    })
+
+
+@app.route('/api/family/children', methods=['POST'])
+def api_add_child():
+    """Add a new child to the household."""
+    if not HAS_FAMILY_MODULE:
+        return jsonify({"error": "Family module not available"}), 500
+
+    data = request.get_json() or {}
+
+    if not data.get("name"):
+        return jsonify({"error": "Child name is required"}), 400
+    if not data.get("birth_date"):
+        return jsonify({"error": "Birth date is required (YYYY-MM-DD)"}), 400
+
+    household = Household()
+    child = household.add_child(data["name"], data["birth_date"])
+
+    return jsonify({
+        "status": "created",
+        "child": child.to_dict(),
+        "message": f"{child.name} adicionado(a) com sucesso!"
+    })
+
+
+@app.route('/api/family/children/<child_id>', methods=['PUT'])
+def api_update_child(child_id):
+    """Update a child's information."""
+    if not HAS_FAMILY_MODULE:
+        return jsonify({"error": "Family module not available"}), 500
+
+    data = request.get_json() or {}
+    household = Household()
+
+    child = household.update_child(child_id, **data)
+    if not child:
+        return jsonify({"error": "Child not found"}), 404
+
+    return jsonify({
+        "status": "updated",
+        "child": child.to_dict(),
+    })
+
+
+@app.route('/api/family/children/<child_id>', methods=['DELETE'])
+def api_remove_child(child_id):
+    """Remove a child from the household (soft delete)."""
+    if not HAS_FAMILY_MODULE:
+        return jsonify({"error": "Family module not available"}), 500
+
+    household = Household()
+    if household.remove_child(child_id):
+        return jsonify({"status": "removed"})
+    return jsonify({"error": "Child not found"}), 404
+
+
+@app.route('/api/family/children/<child_id>/activate', methods=['POST'])
+def api_set_active_child(child_id):
+    """Set the active child for detection."""
+    if not HAS_FAMILY_MODULE:
+        return jsonify({"error": "Family module not available"}), 500
+
+    household = Household()
+    if household.set_active_child(child_id):
+        child = household.get_child(child_id)
+        return jsonify({
+            "status": "activated",
+            "child": child.to_dict() if child else None,
+            "message": f"Agora detectando interacoes com {child.name}!" if child else ""
+        })
+    return jsonify({"error": "Child not found or inactive"}), 404
+
+
+@app.route('/api/family/children/<child_id>/calibrate', methods=['POST'])
+def api_calibrate_child(child_id):
+    """Start or add samples to pitch calibration for a child."""
+    if not HAS_FAMILY_MODULE:
+        return jsonify({"error": "Family module not available"}), 500
+
+    household = Household()
+    detector = ChildDetector(household)
+
+    data = request.get_json() or {}
+    pitches = data.get("pitches", [])
+
+    if pitches:
+        # Add calibration samples
+        result = detector.add_calibration_sample(child_id, pitches)
+        return jsonify(result)
+    else:
+        # Start calibration
+        result = detector.start_calibration(child_id)
+        return jsonify(result)
+
+
+@app.route('/api/family/caregivers', methods=['GET'])
+def api_list_caregivers():
+    """List all caregivers in the household."""
+    if not HAS_FAMILY_MODULE:
+        return jsonify({"error": "Family module not available"}), 500
+
+    household = Household()
+    return jsonify({
+        "caregivers": [c.to_dict() for c in household.caregivers],
+        "total": len(household.caregivers),
+    })
+
+
+@app.route('/api/family/caregivers', methods=['POST'])
+def api_add_caregiver():
+    """Add a new caregiver to the household."""
+    if not HAS_FAMILY_MODULE:
+        return jsonify({"error": "Family module not available"}), 500
+
+    data = request.get_json() or {}
+
+    if not data.get("name"):
+        return jsonify({"error": "Caregiver name is required"}), 400
+
+    household = Household()
+    caregiver = household.add_caregiver(
+        name=data["name"],
+        relationship=data.get("relationship", "parent"),
+        is_primary=data.get("is_primary", False),
+    )
+
+    return jsonify({
+        "status": "created",
+        "caregiver": caregiver.to_dict(),
+    })
+
+
+@app.route('/api/family/household', methods=['GET'])
+def api_household_summary():
+    """Get complete household summary."""
+    if not HAS_FAMILY_MODULE:
+        return jsonify({"error": "Family module not available"}), 500
+
+    household = Household()
+    return jsonify(household.get_summary())
+
+
+# ============ KNOWLEDGE BASE / RAG API ============
+
+@app.route('/api/knowledge/search', methods=['GET'])
+def api_knowledge_search():
+    """Semantic search over the knowledge base."""
+    if not HAS_KNOWLEDGE_MODULE:
+        return jsonify({"error": "Knowledge module not available"}), 500
+
+    query = request.args.get('q', '')
+    if not query:
+        return jsonify({"error": "Query parameter 'q' is required"}), 400
+
+    k = request.args.get('k', 5, type=int)
+
+    engine = RAGEngine()
+    results = engine.search(query, k=k)
+
+    return jsonify({
+        "query": query,
+        "results": results,
+        "count": len(results),
+    })
+
+
+@app.route('/api/knowledge/ask', methods=['POST'])
+def api_knowledge_ask():
+    """Ask a question and get an evidence-based answer."""
+    if not HAS_KNOWLEDGE_MODULE:
+        return jsonify({"error": "Knowledge module not available"}), 500
+
+    data = request.get_json() or {}
+    question = data.get("question", "")
+
+    if not question:
+        return jsonify({"error": "Question is required"}), 400
+
+    # Get optional context
+    child_age_months = data.get("child_age_months")
+    if child_age_months is None:
+        profile = load_family_profile()
+        child_age_months = profile.get("child_age_months")
+
+    use_llm = data.get("use_llm", True)
+
+    engine = RAGEngine()
+    response = engine.ask(question, child_age_months=child_age_months, use_llm=use_llm)
+
+    return jsonify(response)
+
+
+@app.route('/api/knowledge/index', methods=['POST'])
+def api_knowledge_index():
+    """Index or reindex the knowledge base content."""
+    if not HAS_KNOWLEDGE_MODULE:
+        return jsonify({"error": "Knowledge module not available"}), 500
+
+    data = request.get_json(silent=True) or {}
+    force_reindex = data.get("force", False)
+
+    engine = RAGEngine()
+    stats = engine.index_content(force_reindex=force_reindex)
+
+    return jsonify({
+        "status": "indexed",
+        **stats,
+    })
+
+
+@app.route('/api/knowledge/stats', methods=['GET'])
+def api_knowledge_stats():
+    """Get knowledge base statistics."""
+    if not HAS_KNOWLEDGE_MODULE:
+        return jsonify({"error": "Knowledge module not available"}), 500
+
+    store = VectorStore()
+    return jsonify(store.get_stats())
+
+
+@app.route('/api/knowledge/papers', methods=['GET'])
+def api_knowledge_papers():
+    """List all indexed documents/papers."""
+    if not HAS_KNOWLEDGE_MODULE:
+        return jsonify({"error": "Knowledge module not available"}), 500
+
+    store = VectorStore()
+    return jsonify({
+        "documents": store.list_documents(),
+    })
+
+
+# ============ ANALYTICS API ============
+
+@app.route('/api/analytics/patterns', methods=['GET'])
+def api_analytics_patterns():
+    """Get pattern analysis for user's interactions."""
+    if not HAS_ANALYTICS_MODULE:
+        return jsonify({"error": "Analytics module not available"}), 500
+
+    days = request.args.get('days', 30, type=int)
+    child_id = request.args.get('child_id')
+
+    analyzer = PatternAnalyzer()
+    analysis = analyzer.get_full_analysis(days=days, child_id=child_id)
+
+    return jsonify(analysis)
+
+
+@app.route('/api/analytics/trends', methods=['GET'])
+def api_analytics_trends():
+    """Get trend data over time."""
+    if not HAS_ANALYTICS_MODULE:
+        return jsonify({"error": "Analytics module not available"}), 500
+
+    days = request.args.get('days', 90, type=int)
+
+    calculator = TrendCalculator()
+    trends = calculator.get_full_trends(days=days)
+
+    return jsonify(trends)
+
+
+@app.route('/api/analytics/strengths', methods=['GET'])
+def api_analytics_strengths():
+    """Get identified strengths from interaction patterns."""
+    if not HAS_ANALYTICS_MODULE:
+        return jsonify({"error": "Analytics module not available"}), 500
+
+    days = request.args.get('days', 30, type=int)
+
+    analyzer = PatternAnalyzer()
+    sessions = analyzer.load_sessions(days=days)
+    strengths = analyzer.identify_strengths(sessions)
+
+    return jsonify({
+        "strengths": [s.to_dict() for s in strengths],
+        "sessions_analyzed": len(sessions),
+    })
+
+
+@app.route('/api/analytics/serve-return-scores', methods=['GET'])
+def api_serve_return_scores():
+    """Get scores for each serve-and-return step."""
+    if not HAS_ANALYTICS_MODULE:
+        return jsonify({"error": "Analytics module not available"}), 500
+
+    days = request.args.get('days', 30, type=int)
+
+    analyzer = PatternAnalyzer()
+    sessions = analyzer.load_sessions(days=days)
+    step_analysis = analyzer.analyze_serve_return_steps(sessions)
+
+    return jsonify(step_analysis)
+
+
+@app.route('/api/session/quality', methods=['GET'])
+def api_session_quality():
+    """Get quality metrics for current or specified session."""
+    if not HAS_ANALYTICS_MODULE:
+        return jsonify({"error": "Analytics module not available"}), 500
+
+    filename = request.args.get('filename')
+
+    if filename:
+        # Load specific session
+        filepath = DATA_DIR / filename
+        if not filepath.exists():
+            return jsonify({"error": "Session not found"}), 404
+        with open(filepath, "r", encoding="utf-8") as f:
+            session = json.load(f)
+    else:
+        # Use current session
+        with session_state["lock"]:
+            session = {
+                "events": session_state["events"].copy(),
+                "response_times": session_state["response_times"].copy(),
+            }
+
+    scorer = QualityScorer()
+    quality = scorer.calculate_session_quality(session)
+
+    return jsonify(quality)
+
+
+# ============ RESEARCH LIBRARY API ============
+
+@app.route('/api/research/papers', methods=['GET'])
+def api_research_papers():
+    """List research papers with summaries."""
+    if not HAS_KNOWLEDGE_MODULE:
+        return jsonify({"error": "Knowledge module not available"}), 500
+
+    tags = request.args.get('tags', '').split(',') if request.args.get('tags') else None
+    tags = [t.strip() for t in tags] if tags else None
+
+    summarizer = ResearchSummarizer()
+    papers = summarizer.list_papers(tags=tags)
+
+    return jsonify({
+        "papers": papers,
+        "total": len(papers),
+        "available_tags": summarizer.get_available_tags(),
+    })
+
+
+@app.route('/api/research/papers/<paper_id>', methods=['GET'])
+def api_research_paper(paper_id):
+    """Get a specific research paper."""
+    if not HAS_KNOWLEDGE_MODULE:
+        return jsonify({"error": "Knowledge module not available"}), 500
+
+    summarizer = ResearchSummarizer()
+    paper = summarizer.get_paper(paper_id)
+
+    if not paper:
+        return jsonify({"error": "Paper not found"}), 404
+
+    return jsonify(paper)
+
+
+@app.route('/api/research/featured', methods=['GET'])
+def api_research_featured():
+    """Get featured/recommended papers."""
+    if not HAS_KNOWLEDGE_MODULE:
+        return jsonify({"error": "Knowledge module not available"}), 500
+
+    count = request.args.get('count', 3, type=int)
+
+    summarizer = ResearchSummarizer()
+    papers = summarizer.get_featured_papers(count=count)
+
+    return jsonify({
+        "papers": papers,
+    })
+
+
+# ============ CONTEXT-AWARE TIPS API ============
+
+@app.route('/api/tips/contextual', methods=['GET'])
+def api_contextual_tip():
+    """Get a context-appropriate tip based on time of day."""
+    if not HAS_CONTEXT_MODULE:
+        return jsonify({"error": "Context module not available"}), 500
+
+    selector = TipSelector()
+    result = selector.get_tip_with_context()
+
+    return jsonify(result)
+
+
+@app.route('/api/tips/schedule', methods=['GET'])
+def api_tip_schedule():
+    """Get suggested interaction times with tips."""
+    if not HAS_CONTEXT_MODULE:
+        return jsonify({"error": "Context module not available"}), 500
+
+    selector = TipSelector()
+    schedule = selector.get_scheduled_tips()
+
+    return jsonify({
+        "schedule": schedule,
+    })
+
+
+# ============ PERSONALIZED COACHING API ============
+
+@app.route('/api/coaching', methods=['POST'])
+def api_coaching():
+    """Get personalized coaching tip using Claude."""
+    if not HAS_COACHING_MODULE:
+        return jsonify({"error": "Coaching module not available"}), 500
+
+    data = request.get_json() or {}
+    topic = data.get("topic", "dica geral de interacao")
+
+    # Get child age from request or profile
+    child_age_months = data.get("child_age_months")
+    if child_age_months is None:
+        profile = load_family_profile()
+        child_age_months = profile.get("child_age_months")
+
+    # Get current session data if available
+    session_data = None
+    with session_state["lock"]:
+        if session_state["start_time"]:
+            session_data = {
+                "moments": session_state["moments"],
+                "duration_minutes": (time.time() - session_state["start_time"]) / 60,
+            }
+
+    coach = PersonalizedCoach()
+    response = coach.get_coaching_tip(
+        topic=topic,
+        child_age_months=child_age_months,
+        include_evidence=data.get("include_evidence", True),
+        session_data=session_data,
+    )
+
+    return jsonify(response)
+
+
+@app.route('/api/coaching/explain', methods=['POST'])
+def api_coaching_explain():
+    """Explain why a tip was given."""
+    if not HAS_COACHING_MODULE:
+        return jsonify({"error": "Coaching module not available"}), 500
+
+    data = request.get_json() or {}
+    tip = data.get("tip", "")
+
+    if not tip:
+        return jsonify({"error": "Tip text is required"}), 400
+
+    coach = PersonalizedCoach()
+    response = coach.explain_tip(tip)
+
+    return jsonify(response)
+
+
+@app.route('/api/coaching/weekly', methods=['GET'])
+def api_coaching_weekly():
+    """Get weekly coaching insight."""
+    if not HAS_COACHING_MODULE:
+        return jsonify({"error": "Coaching module not available"}), 500
+
+    profile = load_family_profile()
+    child_age_months = profile.get("child_age_months")
+
+    coach = PersonalizedCoach()
+    insight = coach.get_weekly_insight(child_age_months=child_age_months)
+
+    return jsonify(insight)
+
+
+# ============ MILESTONES API ============
+
+@app.route('/api/milestones', methods=['GET'])
+def api_milestones():
+    """Get developmental milestones for child's age."""
+    if not HAS_MILESTONES_MODULE:
+        return jsonify({"error": "Milestones module not available"}), 500
+
+    age_months = request.args.get('age_months', type=int)
+
+    if age_months is None:
+        profile = load_family_profile()
+        age_months = profile.get("child_age_months")
+
+    if age_months is None:
+        return jsonify({"error": "Age not specified. Set via profile or ?age_months=X"}), 400
+
+    tracker = MilestoneTracker()
+    milestones = tracker.get_milestones_for_age(age_months)
+
+    return jsonify(milestones)
+
+
+@app.route('/api/milestones/progress', methods=['GET'])
+def api_milestones_progress():
+    """Get progress on developmental milestones."""
+    if not HAS_MILESTONES_MODULE:
+        return jsonify({"error": "Milestones module not available"}), 500
+
+    profile = load_family_profile()
+    age_months = profile.get("child_age_months")
+
+    if age_months is None:
+        return jsonify({"error": "Child age not set in profile"}), 400
+
+    # Load recent sessions
+    days = request.args.get('days', 30, type=int)
+    if HAS_ANALYTICS_MODULE:
+        analyzer = PatternAnalyzer()
+        sessions = analyzer.load_sessions(days=days)
+    else:
+        sessions = []
+
+    tracker = MilestoneTracker()
+    progress = tracker.assess_progress(sessions, age_months)
+
+    return jsonify(progress)
+
+
+@app.route('/api/milestones/activities', methods=['GET'])
+def api_milestones_activities():
+    """Get suggested activities for developmental milestones."""
+    if not HAS_MILESTONES_MODULE:
+        return jsonify({"error": "Milestones module not available"}), 500
+
+    age_months = request.args.get('age_months', type=int)
+    focus_area = request.args.get('area')
+
+    if age_months is None:
+        profile = load_family_profile()
+        age_months = profile.get("child_age_months")
+
+    if age_months is None:
+        return jsonify({"error": "Age not specified"}), 400
+
+    tracker = MilestoneTracker()
+    activities = tracker.get_suggested_activities(age_months, focus_area)
+
+    return jsonify({
+        "activities": activities,
+        "age_months": age_months,
+    })
+
+
+# ============ CURRICULUM API ENDPOINTS ============
+
+@app.route('/api/curriculum/current', methods=['GET'])
+def api_curriculum_current():
+    """Get current curriculum week and lesson."""
+    if not HAS_CURRICULUM_MODULE:
+        return jsonify({"error": "Curriculum module not available"}), 500
+
+    tracker = ProgressTracker()
+    state = tracker.get_current_state()
+
+    manager = CurriculumManager()
+    week_data = manager.get_week(state["current_week"])
+
+    return jsonify({
+        "progress": state,
+        "week": week_data,
+    })
+
+
+@app.route('/api/curriculum/overview', methods=['GET'])
+def api_curriculum_overview():
+    """Get overview of all curriculum weeks."""
+    if not HAS_CURRICULUM_MODULE:
+        return jsonify({"error": "Curriculum module not available"}), 500
+
+    manager = CurriculumManager()
+    overview = manager.get_curriculum_overview()
+
+    tracker = ProgressTracker()
+    state = tracker.get_current_state()
+
+    return jsonify({
+        "weeks": overview,
+        "current_week": state["current_week"],
+        "lessons_completed": state["lessons_completed_total"],
+    })
+
+
+@app.route('/api/curriculum/week/<int:week_num>', methods=['GET'])
+def api_curriculum_week(week_num):
+    """Get curriculum for a specific week."""
+    if not HAS_CURRICULUM_MODULE:
+        return jsonify({"error": "Curriculum module not available"}), 500
+
+    if not 1 <= week_num <= 5:
+        return jsonify({"error": "Week must be 1-5"}), 400
+
+    manager = CurriculumManager()
+    week_data = manager.get_week(week_num)
+
+    tracker = ProgressTracker()
+    progress = tracker.progress
+    week_lessons = [l for l in progress.lessons_completed if l.startswith(f"{week_num}.")]
+
+    return jsonify({
+        "week": week_data,
+        "lessons_completed": week_lessons,
+        "is_current_week": progress.current_week == week_num,
+    })
+
+
+@app.route('/api/curriculum/lesson/<lesson_id>/complete', methods=['POST'])
+def api_curriculum_complete_lesson(lesson_id):
+    """Mark a lesson as complete."""
+    if not HAS_CURRICULUM_MODULE:
+        return jsonify({"error": "Curriculum module not available"}), 500
+
+    # Validate lesson_id format
+    try:
+        parts = lesson_id.split(".")
+        week = int(parts[0])
+        lesson = int(parts[1])
+        if not (1 <= week <= 5 and 1 <= lesson <= 2):
+            return jsonify({"error": "Invalid lesson ID"}), 400
+    except (ValueError, IndexError):
+        return jsonify({"error": "Invalid lesson ID format. Use X.Y (e.g., 1.1)"}), 400
+
+    tracker = ProgressTracker()
+    result = tracker.complete_lesson(lesson_id)
+
+    return jsonify(result)
+
+
+@app.route('/api/curriculum/progress', methods=['GET'])
+def api_curriculum_progress():
+    """Get curriculum progress."""
+    if not HAS_CURRICULUM_MODULE:
+        return jsonify({"error": "Curriculum module not available"}), 500
+
+    tracker = ProgressTracker()
+    state = tracker.get_current_state()
+
+    return jsonify(state)
+
+
+@app.route('/api/curriculum/achievements', methods=['GET'])
+def api_curriculum_achievements():
+    """Get earned curriculum achievements."""
+    if not HAS_CURRICULUM_MODULE:
+        return jsonify({"error": "Curriculum module not available"}), 500
+
+    tracker = ProgressTracker()
+    achievements = tracker.get_achievements()
+
+    return jsonify({
+        "achievements": achievements,
+        "total": len(achievements),
+    })
+
+
+@app.route('/api/curriculum/daily-challenge', methods=['GET'])
+def api_curriculum_daily_challenge():
+    """Get today's daily challenge."""
+    if not HAS_CURRICULUM_MODULE:
+        return jsonify({"error": "Curriculum module not available"}), 500
+
+    tracker = ProgressTracker()
+    status = tracker.get_daily_challenge_status()
+
+    manager = CurriculumManager()
+    from datetime import date
+    day_of_week = date.today().weekday()
+    challenge = manager.get_daily_challenge(status["current_week"], day_of_week)
+
+    return jsonify({
+        "challenge": challenge,
+        "week": status["current_week"],
+        "completed_today": status["completed_today"],
+        "total_completed": status["total_completed"],
+    })
+
+
+@app.route('/api/curriculum/daily-challenge/complete', methods=['POST'])
+def api_curriculum_complete_daily_challenge():
+    """Mark today's daily challenge as complete."""
+    if not HAS_CURRICULUM_MODULE:
+        return jsonify({"error": "Curriculum module not available"}), 500
+
+    tracker = ProgressTracker()
+    result = tracker.complete_daily_challenge()
+
+    return jsonify(result)
+
+
+@app.route('/api/curriculum/reset', methods=['POST'])
+def api_curriculum_reset():
+    """Reset curriculum progress (for testing or starting over)."""
+    if not HAS_CURRICULUM_MODULE:
+        return jsonify({"error": "Curriculum module not available"}), 500
+
+    tracker = ProgressTracker()
+    result = tracker.reset_progress()
+
+    return jsonify(result)
+
+
 @app.route('/api/sessions', methods=['GET'])
 def api_list_sessions():
     """Lista todas as sessões salvas localmente."""
@@ -877,87 +1842,6 @@ def build_coaching_context(cdc_data, tip):
     return "\n\n".join(parts)
 
 
-@app.route('/api/coaching', methods=['POST'])
-def api_coaching():
-    """Gera dica personalizada usando OpenAI API com base no Harvard CDC."""
-    if not HAS_OPENAI:
-        return jsonify({"error": "openai nao instalado (pip install openai)"}), 400
-
-    api_key = os.environ.get("OPENAI_API_KEY", "")
-    if not api_key:
-        return jsonify({"error": "OPENAI_API_KEY nao configurada"}), 400
-
-    # Coleta dados da sessao
-    with session_state["lock"]:
-        moments = session_state["moments"]
-        child_speech = session_state["child_speech"]
-        adult_speech = session_state["adult_speech"]
-        duration = time.time() - session_state["start_time"] if session_state["start_time"] else 0
-        events = session_state["events"][-30:]
-
-    hours = duration / 3600 if duration > 0 else 0
-    moments_per_hour = round(moments / hours, 1) if hours > 0.01 else 0
-
-    # Carrega conhecimento Harvard CDC e dica da semana
-    cdc_data = load_harvard_cdc()
-    tip = get_current_tip()
-    educational_context = build_coaching_context(cdc_data, tip)
-
-    system_prompt = """Voce e o Maestro, um coach gentil de conexao familiar baseado na ciencia do
-Harvard Center on the Developing Child.
-
-SUA BASE CIENTIFICA:
-- Serve-and-return: interacoes responsivas constroem a arquitetura cerebral
-- Mais de 1 milhao de conexoes neurais se formam por segundo nos primeiros anos
-- Funcao executiva (planejar, focar, lembrar) se desenvolve atraves de interacoes
-- Relacoes responsivas sao a influencia MAIS IMPORTANTE no desenvolvimento
-- Estresse toxico e prevenido por conexoes afetivas estaveis
-
-COMO USAR A CIENCIA:
-- Conecte a dica a um dos 5 passos de serve-and-return quando relevante
-- Sugira atividades concretas e simples baseadas na faixa etaria
-- Explique brevemente POR QUE a atividade funciona (a ciencia por tras)
-- Use a linguagem do Harvard CDC: "momentos de conexao", "arquitetura cerebral", "serve-and-return"
-
-REGRAS ABSOLUTAS:
-- Responda SEMPRE em portugues brasileiro
-- Tom SEMPRE positivo, encorajador, esperancoso
-- NUNCA use palavras negativas: "perdeu", "falhou", "errou", "faltou"
-- NUNCA julgue ou critique o pai/mae
-- Celebre o que JA ESTA SENDO FEITO antes de sugerir algo novo
-- Reconheca que audio so captura PARTE da interacao (olhares e toques tambem contam!)
-- Maximo 4 frases curtas
-- Inclua UMA sugestao pratica de atividade quando possivel"""
-
-    user_prompt = f"""DADOS DA SESSAO:
-- Momentos de conversa detectados: {moments}
-- Fala da crianca: {child_speech} vezes
-- Fala do adulto: {adult_speech} vezes
-- Duracao: {round(duration / 60, 1)} minutos
-- Momentos por hora: {moments_per_hour}
-
-CONTEXTO EDUCACIONAL:
-{educational_context}
-
-Baseado nos dados da sessao e no contexto educacional acima, gere UMA dica personalizada
-e encorajadora. Conecte com a ciencia do Harvard CDC e sugira uma atividade pratica."""
-
-    try:
-        client = OpenAI(api_key=api_key)
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            max_tokens=300,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt}
-            ]
-        )
-        coaching_text = response.choices[0].message.content
-        return jsonify({"coaching": coaching_text})
-    except Exception as e:
-        return jsonify({"error": f"Erro ao gerar coaching: {e}"}), 500
-
-
 @app.route('/api/activities', methods=['GET'])
 def api_activities():
     """Retorna atividades do Harvard CDC filtradas por area ou idade."""
@@ -1162,7 +2046,21 @@ def classify_speaker(pitch, child_threshold):
 
 def start_audio_stream():
     """Inicia o stream de audio - detecta momentos de conversa."""
-    global audio_stream, detector_state
+    global audio_stream, detector_state, family_profile
+
+    # Load family profile for age-based threshold
+    family_profile = load_family_profile()
+
+    # Determine pitch threshold: use age-based if available, else command line arg
+    pitch_threshold = get_child_pitch_threshold()
+    if pitch_threshold == 280.0 and detector_args.threshold != 280.0:
+        # Use command line override if no profile set
+        pitch_threshold = detector_args.threshold
+
+    age_info = ""
+    if family_profile.get("child_age_months") is not None:
+        age_info = f" (crianca {family_profile['child_age_months']} meses)"
+    print(f"{DIM}Threshold: {pitch_threshold:.0f}Hz{age_info}{RESET}")
 
     vad = webrtcvad.Vad(detector_args.vad)
     detector_state = {
@@ -1171,6 +2069,7 @@ def start_audio_stream():
         "silence_count": 0,
         "awaiting_conversation": False,  # Crianca falou, aguardando adulto
         "child_speech_time": 0,
+        "pitch_threshold": pitch_threshold,  # Store for use in callbacks
     }
 
     def on_speech_end():
@@ -1183,7 +2082,7 @@ def start_audio_stream():
 
         samples = np.concatenate(detector_state["frames"])
         pitch = estimate_pitch_median(samples)
-        speaker, confidence = classify_speaker(pitch, detector_args.threshold)
+        speaker, confidence = classify_speaker(pitch, detector_state["pitch_threshold"])
 
         pitch_str = f"{pitch:.0f}Hz" if pitch else "?"
         duration_ms = num_frames * FRAME_MS
@@ -1335,7 +2234,7 @@ def run_flask():
 
 
 def main():
-    global detector_args
+    global detector_args, family_profile
 
     parser = argparse.ArgumentParser(description="Detector de turnos em tempo real")
     parser.add_argument("--threshold", type=float, default=280.0,
@@ -1356,10 +2255,27 @@ def main():
     # Garante que diretório de dados existe
     ensure_data_dir()
 
+    # Load family profile
+    family_profile = load_family_profile()
+
     print("=" * 50)
     print("MAESTRO - Momentos de Conversa")
     print("Um coach gentil para conexao familiar")
     print("=" * 50)
+
+    # Show family profile if configured
+    if family_profile.get("child_name") or family_profile.get("child_age_months"):
+        child_name = family_profile.get("child_name", "Crianca")
+        age_months = family_profile.get("child_age_months")
+        age_group = family_profile.get("age_group")
+        threshold = get_child_pitch_threshold()
+
+        print(f"Crianca: {child_name}")
+        if age_months is not None:
+            print(f"Idade: {age_months} meses (grupo {age_group})")
+            print(f"Threshold adaptado: {threshold:.0f}Hz")
+        print("-" * 50)
+
     print(f"Deteccao: conservadora (alta confianca)")
     print(f"Janela: {detector_args.timeout:.0f}s (generosa)")
     print(f"Feedback: apenas positivo (LED verde)")
@@ -1368,12 +2284,15 @@ def main():
     print(f"API: http://0.0.0.0:{detector_args.port}")
     print("-" * 50)
     print("Endpoints:")
-    print("  GET  /api/status   - estado atual")
-    print("  GET  /api/session  - sessao ativa")
-    print("  GET  /api/weekly   - resumo semanal + dica")
-    print("  GET  /api/sessions - historico")
-    print("  POST /api/start    - iniciar")
-    print("  POST /api/stop     - parar")
+    print("  GET  /api/status         - estado atual")
+    print("  GET  /api/session        - sessao ativa")
+    print("  GET  /api/weekly         - resumo semanal + dica")
+    print("  GET  /api/sessions       - historico")
+    print("  POST /api/start          - iniciar")
+    print("  POST /api/stop           - parar")
+    print("  GET  /api/family/profile - perfil da familia")
+    print("  POST /api/family/profile - configurar crianca")
+    print("  GET  /api/content/age-filtered - conteudo por idade")
     print("=" * 50)
 
     # Inicia auto-save em thread separada

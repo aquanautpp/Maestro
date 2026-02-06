@@ -1,0 +1,203 @@
+{
+  "_comment": "Tips organizadas por contexto para entrega situacional",
+
+  "contexts": {
+    "morning_routine": {
+      "description": "Rotina matinal - acordar, vestir, cafe da manha",
+      "tips": [
+        {
+          "id": "morning_narrate_getting_dressed",
+          "text": "Enquanto se vestem, narre: 'Agora vamos colocar a camiseta azul por cima da cabeca!'",
+          "serve_return_step": 3,
+          "age_groups": ["0-1", "1-2", "2-3"]
+        },
+        {
+          "id": "morning_choices",
+          "text": "Ofereca escolhas simples: 'Camiseta azul ou vermelha hoje?'",
+          "serve_return_step": 4,
+          "age_groups": ["1-2", "2-3", "3-4", "4-5", "5-6"]
+        },
+        {
+          "id": "morning_breakfast_naming",
+          "text": "No cafe, nomeie os alimentos: 'Olha o leite branquinho na caneca!'",
+          "serve_return_step": 3,
+          "age_groups": ["0-1", "1-2", "2-3"]
+        },
+        {
+          "id": "morning_plan_day",
+          "text": "Converse sobre o dia: 'Hoje vamos passear no parque!'",
+          "serve_return_step": 5,
+          "age_groups": ["2-3", "3-4", "4-5", "5-6"]
+        }
+      ]
+    },
+
+    "mealtime": {
+      "description": "Refeicoes - almoco, jantar, lanches",
+      "tips": [
+        {
+          "id": "meal_naming_foods",
+          "text": "Nomeie os alimentos com detalhes: 'Olha a cenoura laranja! E crocante!'",
+          "serve_return_step": 3,
+          "age_groups": ["0-1", "1-2", "2-3", "3-4"]
+        },
+        {
+          "id": "meal_open_questions",
+          "text": "Pergunte sobre preferencias: 'Do que voce mais gostou?'",
+          "serve_return_step": 4,
+          "age_groups": ["2-3", "3-4", "4-5", "5-6"]
+        },
+        {
+          "id": "meal_counting",
+          "text": "Conte junto: 'Quantas uvas temos aqui? Vamos contar!'",
+          "serve_return_step": 3,
+          "age_groups": ["2-3", "3-4", "4-5"]
+        },
+        {
+          "id": "meal_wait_chewing",
+          "text": "Espere seu filho terminar de mastigar antes de fazer perguntas",
+          "serve_return_step": 4,
+          "age_groups": ["1-2", "2-3", "3-4", "4-5", "5-6"]
+        }
+      ]
+    },
+
+    "playtime": {
+      "description": "Hora de brincar - livre ou direcionada",
+      "tips": [
+        {
+          "id": "play_follow_lead",
+          "text": "Siga a lideranca: veja o que seu filho escolhe e entre na brincadeira",
+          "serve_return_step": 1,
+          "age_groups": ["0-1", "1-2", "2-3", "3-4", "4-5", "5-6"]
+        },
+        {
+          "id": "play_narrate_actions",
+          "text": "Narre o que voces fazem: 'Voce esta empilhando os blocos bem alto!'",
+          "serve_return_step": 3,
+          "age_groups": ["0-1", "1-2", "2-3", "3-4"]
+        },
+        {
+          "id": "play_take_turns",
+          "text": "Revezem na brincadeira: 'Agora e minha vez, depois e sua vez!'",
+          "serve_return_step": 4,
+          "age_groups": ["1-2", "2-3", "3-4", "4-5", "5-6"]
+        },
+        {
+          "id": "play_pretend_talk",
+          "text": "Na brincadeira de faz-de-conta, converse com os personagens",
+          "serve_return_step": 3,
+          "age_groups": ["2-3", "3-4", "4-5", "5-6"]
+        }
+      ]
+    },
+
+    "bedtime_routine": {
+      "description": "Rotina de dormir - banho, historia, acalmar",
+      "tips": [
+        {
+          "id": "bedtime_transition_warning",
+          "text": "Avise com antecedencia: 'Mais 5 minutinhos e vamos comecar a rotina de dormir'",
+          "serve_return_step": 5,
+          "age_groups": ["1-2", "2-3", "3-4", "4-5", "5-6"]
+        },
+        {
+          "id": "bedtime_story_pause",
+          "text": "Na historia, pause e deixe seu filho completar frases conhecidas",
+          "serve_return_step": 4,
+          "age_groups": ["1-2", "2-3", "3-4", "4-5", "5-6"]
+        },
+        {
+          "id": "bedtime_day_review",
+          "text": "Relembre o dia: 'O que voce mais gostou de fazer hoje?'",
+          "serve_return_step": 4,
+          "age_groups": ["2-3", "3-4", "4-5", "5-6"]
+        },
+        {
+          "id": "bedtime_calm_voice",
+          "text": "Use voz calma e baixa para sinalizar que e hora de descansar",
+          "serve_return_step": 2,
+          "age_groups": ["0-1", "1-2", "2-3", "3-4", "4-5", "5-6"]
+        }
+      ]
+    },
+
+    "learning": {
+      "description": "Momentos de aprendizado - leitura, atividades",
+      "tips": [
+        {
+          "id": "learning_book_point",
+          "text": "Aponte figuras no livro e pergunte: 'O que voce ve aqui?'",
+          "serve_return_step": 3,
+          "age_groups": ["0-1", "1-2", "2-3", "3-4"]
+        },
+        {
+          "id": "learning_wait_answer",
+          "text": "Depois de perguntar, espere... seu filho pode precisar de tempo",
+          "serve_return_step": 4,
+          "age_groups": ["1-2", "2-3", "3-4", "4-5", "5-6"]
+        },
+        {
+          "id": "learning_expand",
+          "text": "Expanda o que ele diz: se ele diz 'au au', voce diz 'Sim, o cachorro grande!'",
+          "serve_return_step": 3,
+          "age_groups": ["1-2", "2-3"]
+        }
+      ]
+    },
+
+    "outdoor": {
+      "description": "Atividades ao ar livre - parque, quintal, caminhada",
+      "tips": [
+        {
+          "id": "outdoor_nature_naming",
+          "text": "Nomeie o que voces veem: 'Olha o passarinho! Ele esta cantando!'",
+          "serve_return_step": 3,
+          "age_groups": ["0-1", "1-2", "2-3", "3-4"]
+        },
+        {
+          "id": "outdoor_follow_interest",
+          "text": "Siga o interesse: se ele para para ver uma formiga, pare junto",
+          "serve_return_step": 1,
+          "age_groups": ["1-2", "2-3", "3-4", "4-5", "5-6"]
+        },
+        {
+          "id": "outdoor_questions",
+          "text": "Faca perguntas abertas: 'O que voce acha que aquela nuvem parece?'",
+          "serve_return_step": 4,
+          "age_groups": ["3-4", "4-5", "5-6"]
+        }
+      ]
+    },
+
+    "general": {
+      "description": "Dicas gerais para qualquer momento",
+      "tips": [
+        {
+          "id": "general_wait_response",
+          "text": "Conte ate 5 mentalmente antes de falar de novo - de espaco para resposta",
+          "serve_return_step": 4,
+          "age_groups": ["0-1", "1-2", "2-3", "3-4", "4-5", "5-6"]
+        },
+        {
+          "id": "general_follow_gaze",
+          "text": "Observe para onde seu filho olha e comente sobre isso",
+          "serve_return_step": 1,
+          "age_groups": ["0-1", "1-2", "2-3"]
+        },
+        {
+          "id": "general_celebrate_sounds",
+          "text": "Celebre balbucios e sons como se fossem palavras - sao!",
+          "serve_return_step": 2,
+          "age_groups": ["0-1", "1-2"]
+        },
+        {
+          "id": "general_face_to_face",
+          "text": "Fique na altura dos olhos do seu filho quando conversar",
+          "serve_return_step": 1,
+          "age_groups": ["0-1", "1-2", "2-3", "3-4"]
+        }
+      ]
+    }
+  }
+}

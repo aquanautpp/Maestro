@@ -1,0 +1,338 @@
+{
+  "session_id": "7bfd3c6b",
+  "started_at": "2026-02-06T10:30:52.967046Z",
+  "ended_at": "2026-02-06T10:36:31.136364Z",
+  "duration_seconds": 338.2,
+  "duration_minutes": 5.6,
+  "moments": 2,
+  "child_speech": 2,
+  "adult_speech": 45,
+  "moments_per_hour": 21.3,
+  "response_times": [
+    8.17,
+    1.99
+  ],
+  "events": [
+    {
+      "time": 18.0,
+      "type": "adult",
+      "pitch": 112
+    },
+    {
+      "time": 20.4,
+      "type": "adult",
+      "pitch": 114
+    },
+    {
+      "time": 23.0,
+      "type": "adult",
+      "pitch": 117
+    },
+    {
+      "time": 26.9,
+      "type": "adult",
+      "pitch": 121
+    },
+    {
+      "time": 28.6,
+      "type": "adult",
+      "pitch": 113
+    },
+    {
+      "time": 32.9,
+      "type": "adult",
+      "pitch": 113
+    },
+    {
+      "time": 35.3,
+      "type": "sound",
+      "note": "uncertain"
+    },
+    {
+      "time": 39.8,
+      "type": "adult",
+      "pitch": 109
+    },
+    {
+      "time": 41.6,
+      "type": "adult",
+      "pitch": 120
+    },
+    {
+      "time": 44.9,
+      "type": "adult",
+      "pitch": 144
+    },
+    {
+      "time": 47.8,
+      "type": "adult",
+      "pitch": 150
+    },
+    {
+      "time": 52.2,
+      "type": "adult",
+      "pitch": 102
+    },
+    {
+      "time": 54.7,
+      "type": "adult",
+      "pitch": 142
+    },
+    {
+      "time": 58.9,
+      "type": "adult",
+      "pitch": 115
+    },
+    {
+      "time": 62.5,
+      "type": "sound",
+      "note": "uncertain"
+    },
+    {
+      "time": 63.6,
+      "type": "sound",
+      "note": "uncertain"
+    },
+    {
+      "time": 99.5,
+      "type": "adult",
+      "pitch": 116
+    },
+    {
+      "time": 100.5,
+      "type": "adult",
+      "pitch": 100
+    },
+    {
+      "time": 102.3,
+      "type": "sound",
+      "note": "uncertain"
+    },
+    {
+      "time": 108.0,
+      "type": "adult",
+      "pitch": 118
+    },
+    {
+      "time": 110.7,
+      "type": "adult",
+      "pitch": 122
+    },
+    {
+      "time": 114.0,
+      "type": "adult",
+      "pitch": 99
+    },
+    {
+      "time": 118.4,
+      "type": "adult",
+      "pitch": 113
+    },
+    {
+      "time": 121.4,
+      "type": "adult",
+      "pitch": 140
+    },
+    {
+      "time": 124.6,
+      "type": "adult",
+      "pitch": 113
+    },
+    {
+      "time": 128.4,
+      "type": "adult",
+      "pitch": 115
+    },
+    {
+      "time": 130.6,
+      "type": "adult",
+      "pitch": 244
+    },
+    {
+      "time": 133.4,
+      "type": "child",
+      "pitch": 320
+    },
+    {
+      "time": 141.5,
+      "type": "moment",
+      "response_time": 8.17
+    },
+    {
+      "time": 144.0,
+      "type": "sound",
+      "pitch": 285,
+      "note": "uncertain"
+    },
+    {
+      "time": 146.2,
+      "type": "adult",
+      "pitch": 125
+    },
+    {
+      "time": 150.2,
+      "type": "adult",
+      "pitch": 101
+    },
+    {
+      "time": 152.4,
+      "type": "adult",
+      "pitch": 102
+    },
+    {
+      "time": 154.5,
+      "type": "adult",
+      "pitch": 274
+    },
+    {
+      "time": 165.5,
+      "type": "adult",
+      "pitch": 107
+    },
+    {
+      "time": 170.8,
+      "type": "adult",
+      "pitch": 111
+    },
+    {
+      "time": 179.2,
+      "type": "adult",
+      "pitch": 136
+    },
+    {
+      "time": 187.9,
+      "type": "adult",
+      "pitch": 106
+    },
+    {
+      "time": 189.7,
+      "type": "adult",
+      "pitch": 100
+    },
+    {
+      "time": 193.8,
+      "type": "adult",
+      "pitch": 103
+    },
+    {
+      "time": 209.4,
+      "type": "adult",
+      "pitch": 177
+    },
+    {
+      "time": 215.6,
+      "type": "adult",
+      "pitch": 100
+    },
+    {
+      "time": 241.5,
+      "type": "adult",
+      "pitch": 274
+    },
+    {
+      "time": 243.9,
+      "type": "sound",
+      "pitch": 296,
+      "note": "uncertain"
+    },
+    {
+      "time": 248.8,
+      "type": "child",
+      "pitch": 304
+    },
+    {
+      "time": 250.8,
+      "type": "moment",
+      "response_time": 1.99
+    },
+    {
+      "time": 251.8,
+      "type": "adult",
+      "pitch": 115
+    },
+    {
+      "time": 256.2,
+      "type": "sound",
+      "note": "uncertain"
+    },
+    {
+      "time": 259.0,
+      "type": "adult",
+      "pitch": 278
+    },
+    {
+      "time": 260.3,
+      "type": "adult",
+      "pitch": 107
+    },
+    {
+      "time": 267.4,
+      "type": "adult",
+      "pitch": 125
+    },
+    {
+      "time": 269.3,
+      "type": "adult",
+      "pitch": 273
+    },
+    {
+      "time": 271.6,
+      "type": "sound",
+      "pitch": 299,
+      "note": "uncertain"
+    },
+    {
+      "time": 273.8,
+      "type": "sound",
+      "note": "uncertain"
+    },
+    {
+      "time": 275.4,
+      "type": "sound",
+      "pitch": 286,
+      "note": "uncertain"
+    },
+    {
+      "time": 277.7,
+      "type": "sound",
+      "pitch": 299,
+      "note": "uncertain"
+    },
+    {
+      "time": 280.6,
+      "type": "adult",
+      "pitch": 279
+    },
+    {
+      "time": 282.9,
+      "type": "sound",
+      "note": "uncertain"
+    },
+    {
+      "time": 309.0,
+      "type": "sound",
+      "note": "uncertain"
+    },
+    {
+      "time": 314.1,
+      "type": "adult",
+      "pitch": 265
+    },
+    {
+      "time": 315.0,
+      "type": "sound",
+      "note": "uncertain"
+    },
+    {
+      "time": 321.4,
+      "type": "sound",
+      "note": "uncertain"
+    },
+    {
+      "time": 332.6,
+      "type": "sound",
+      "note": "uncertain"
+    }
+  ],
+  "synced": false
+}

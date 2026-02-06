@@ -1,0 +1,31 @@
+{
+  "session_id": "0645ee41",
+  "started_at": "2026-01-29T08:10:57.321124Z",
+  "ended_at": "2026-01-29T08:11:25.767052Z",
+  "duration_seconds": 28.4,
+  "duration_minutes": 0.5,
+  "moments": 0,
+  "child_speech": 0,
+  "adult_speech": 1,
+  "moments_per_hour": 0,
+  "response_times": [],
+  "events": [
+    {
+      "time": 19.5,
+      "type": "sound",
+      "note": "uncertain"
+    },
+    {
+      "time": 22.5,
+      "type": "sound",
+      "pitch": 293,
+      "note": "uncertain"
+    },
+    {
+      "time": 24.9,
+      "type": "adult",
+      "pitch": 136
+    }
+  ],
+  "synced": false
+}
