@@ -11,7 +11,19 @@
       "timestamp": "2026-02-06T11:12:42.982655",
       "model": "gpt-4o-mini",
       "provider": "openai"
+    },
+    "1f774a26a8c7d3f8": {
+      "text": "É maravilhoso ver a consistência e a rotina que você estabeleceu! Para aumentar a interação, que tal usar objetos em casa para criar uma história juntos? Por exemplo, você pode pegar um boneco e um carrinho e perguntar: \"O que o boneco vai fazer com o carrinho?\" Isso estimula a imaginação e auxilia no desenvolvimento das habilidades de comunicação. Aproveite esses momentos de brincadeira!",
+      "timestamp": "2026-02-06T11:20:54.643853",
+      "model": "gpt-4o-mini",
+      "provider": "openai"
+    },
+    "8dfd21d95de467e3": {
+      "text": "Durante as refeições, uma ótima maneira de estimular a linguagem é narrar o que vocês estão fazendo juntos. Por exemplo, você pode dizer: \"Estamos colocando a comida no prato\" ou \"Olha como a sopa está quente!\" Isso ativa a capacidade natural da criança de aprender com conversas, conforme indicado na pesquisa sobre aquisição de linguagem (referência [2]). Além disso, use expressões faciais e mantenha contato visual, pois isso torna a interação ainda mais rica e envolvente. Vamos fazer isso na próxima refeição!",
+      "timestamp": "2026-02-06T11:21:24.930940",
+      "model": "gpt-4o-mini",
+      "provider": "openai"
     }
   },
-  "last_updated": "2026-02-06T11:12:42.983159"
+  "last_updated": "2026-02-06T11:21:24.931647"
 }
