@@ -1,23 +1,13 @@
-# Core processing
-numpy>=1.24.0
-scipy>=1.10.0
+# Core
+numpy
+flask
+flask-cors
+flask-socketio
+gunicorn
 
-# Voice Activity Detection
-webrtcvad>=2.0.10
+# LLM
+openai
+anthropic
 
-# Configuration
-pyyaml>=6.0.0
-
-# Web
-flask>=3.0.0
-flask-socketio>=5.3.0
-flask-cors>=4.0.0
-gunicorn>=21.0.0
-
-# LLM coaching
-anthropic>=0.18.0
-openai>=1.0.0
-
-# Knowledge base / RAG
-sentence-transformers>=2.2.0
-PyPDF2>=3.0.0
+# PDF parsing
+PyPDF2
